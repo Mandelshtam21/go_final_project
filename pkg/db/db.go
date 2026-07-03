@@ -11,17 +11,16 @@ import (
 var db *sql.DB
 
 const schema = `
-CREATE TABLE IF NOT EXISTS scheduler (
+CREATE TABLE scheduler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date CHAR(8) NOT NULL DEFAULT '', 
     title VARCHAR(128) NOT NULL, 
     comment TEXT NOT NULL DEFAULT '', 
     repeat VARCHAR(128) NOT NULL DEFAULT '');
 
-CREATE INDEX IF NOT EXISTS scheduler_date ON scheduler (date);`
+CREATE INDEX scheduler_date ON scheduler (date);`
 
 func Init(dbFile string) error {
-	dbFile = "scheduler.db"
 	_, err := os.Stat(dbFile)
 
 	var install bool
@@ -34,6 +33,14 @@ func Init(dbFile string) error {
 		fmt.Println("Error opening db: ", err)
 		return err
 	}
+
+	if install == true {
+		_, err = db.Exec(schema)
+		if err != nil {
+			fmt.Println("Error creating schema: ", err)
+			return err
+		}
+	}
+
 	return nil
-	defer db.Close()
 }
