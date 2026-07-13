@@ -9,7 +9,7 @@ const DateFormat = "20060102"
 
 func Init() {
 	http.HandleFunc("/api/nextdate", nextDayHandler)
-	http.HandleFunc("/api/task", taskHandler)
+	//	http.HandleFunc("/api/task", taskHandler)
 }
 
 func nextDayHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,9 +39,10 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(nextDate))
 }
 
-func taskHandler(w http.ResponseWriter, r *http.Request) {
+/**func taskHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
 		addTaskHandler(w, r)
 	}
 }
+**/

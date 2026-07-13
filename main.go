@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"go_final_project/pkg/api"
 	"go_final_project/pkg/db"
 )
 
@@ -26,6 +27,8 @@ func main() {
 	if port == "" {
 		port = "7540"
 	}
+
+	api.Init()
 	fmt.Println("Server is running on http://localhost:" + port + " (ノಠ益ಠ)ノ彡┻━┻")
 	err = http.ListenAndServe(":"+port, nil)
 	if err != nil {

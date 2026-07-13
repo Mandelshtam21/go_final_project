@@ -27,7 +27,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		if len(partsRepeat) != 1 {
 			return "", fmt.Errorf("Invalid repeat format for yearly: %v", partsRepeat)
 		}
-		nextDate := date
+		nextDate := date.AddDate(1, 0, 0)
 		for !nextDate.After(now) {
 			nextDate = nextDate.AddDate(1, 0, 0)
 
@@ -67,7 +67,7 @@ func countDays(partsRepeat []string, date, now time.Time) (time.Time, error) {
 	if days < 1 || days > 400 {
 		return time.Time{}, fmt.Errorf("Invalid number of days: %d", days)
 	}
-	nextDate = date
+	nextDate = date.AddDate(0, 0, days)
 	for !afterNow(nextDate, now) {
 		nextDate = nextDate.AddDate(0, 0, days)
 	}
