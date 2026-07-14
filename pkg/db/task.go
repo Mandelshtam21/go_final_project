@@ -1,5 +1,9 @@
 package db
 
+import (
+	"database/sql"
+)
+
 type Task struct {
 	ID      string `json:"id"`
 	Date    string `json:"date"`
@@ -11,9 +15,14 @@ type Task struct {
 func AddTask(task *Task) (int64, error) {
 	var id int64
 
-	query := `INSERT INTO scheduler `
-	res, err := db.Exec(query)
-	if err != nil {
+	query := `INSERT INTO scheduler (date, title, comment, repeat) 
+	VALUES (:date, :title, :comment, :repeat)`
+	res, err := db.Exec(query,
+		sql.Named("date", task.Date),
+		sql.Named("title", task.Title),
+		sql.Named("comment", task.Comment),
+		sql.Named("repeat", task.Repeat))
+	if err == nil {
 		id, err = res.LastInsertId()
 	}
 	return id, err
