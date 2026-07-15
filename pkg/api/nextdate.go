@@ -46,7 +46,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		}
 		return nextDate.Format("20060102"), nil
 	default:
-		return "", nil
+		return "", fmt.Errorf("Invalid repeat format: %s", repeat)
 	}
 }
 

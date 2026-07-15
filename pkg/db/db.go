@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
 	_ "modernc.org/sqlite"
 )
@@ -11,22 +10,17 @@ import (
 var db *sql.DB
 
 const schema = `
-CREATE TABLE scheduler (
+CREATE TABLE IF NOT EXISTS scheduler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date CHAR(8) NOT NULL DEFAULT '', 
     title VARCHAR(128) NOT NULL, 
     comment TEXT NOT NULL DEFAULT '', 
     repeat VARCHAR(128) NOT NULL DEFAULT '');
 
-CREATE INDEX scheduler_date ON scheduler (date);`
+CREATE INDEX IF NOT EXISTS scheduler_date ON scheduler (date);`
 
 func Init(dbFile string) error {
-	_, err := os.Stat(dbFile)
-
-	var install bool
-	if err != nil {
-		install = true
-	}
+	var err error
 
 	db, err = sql.Open("sqlite", dbFile)
 	if err != nil {
@@ -34,12 +28,10 @@ func Init(dbFile string) error {
 		return err
 	}
 
-	if install == true {
-		_, err = db.Exec(schema)
-		if err != nil {
-			fmt.Println("Error creating schema: ", err)
-			return err
-		}
+	_, err = db.Exec(schema)
+	if err != nil {
+		fmt.Println("Error creating db schema: ", err)
+		return err
 	}
 
 	return nil
