@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
@@ -21,6 +22,13 @@ CREATE INDEX IF NOT EXISTS scheduler_date ON scheduler (date);`
 
 func Init(dbFile string) error {
 	var err error
+
+	absPath, err := filepath.Abs(dbFile)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("SERVER DATABASE:", absPath)
 
 	db, err = sql.Open("sqlite", dbFile)
 	if err != nil {

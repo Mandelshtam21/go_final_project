@@ -14,7 +14,7 @@ const webDir = "web"
 func main() {
 	dbFile := os.Getenv("TODO_DBFILE")
 	if dbFile == "" {
-		dbFile = "./pkg/db/scheduler.db"
+		dbFile = "./scheduler.db"
 	}
 	err := db.Init(dbFile)
 	if err != nil {
