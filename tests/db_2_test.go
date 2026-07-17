@@ -2,7 +2,6 @@ package tests
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -24,54 +23,14 @@ func count(db *sqlx.DB) (int, error) {
 	return count, db.Get(&count, `SELECT count(id) FROM scheduler`)
 }
 
-/*
-	*func openDB(t *testing.T) *sqlx.DB {
-		dbfile := DBFile
-		envFile := os.Getenv("TODO_DBFILE")
-		if len(envFile) > 0 {
-			dbfile = envFile
-		}
-		db, err := sqlx.Connect("sqlite", dbfile)
-		assert.NoError(t, err)
-		return db
-	}
-
-*
-*/
 func openDB(t *testing.T) *sqlx.DB {
 	dbfile := DBFile
-
 	envFile := os.Getenv("TODO_DBFILE")
 	if len(envFile) > 0 {
 		dbfile = envFile
 	}
-
-	absPath, err := filepath.Abs(dbfile)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Logf("TEST DATABASE: %s", absPath)
-
 	db, err := sqlx.Connect("sqlite", dbfile)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	var tables []string
-	err = db.Select(
-		&tables,
-		`SELECT name
-		 FROM sqlite_master
-		 WHERE type='table'
-		 ORDER BY name`,
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Logf("TEST DATABASE TABLES: %v", tables)
-
+	assert.NoError(t, err)
 	return db
 }
 
