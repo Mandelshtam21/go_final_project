@@ -67,7 +67,8 @@ func Tasks(limit int, search string) ([]*Task, error) {
 			tasks = append(tasks, task)
 		}
 		return tasks, nil
-	} else if parseErr == nil {
+	}
+	if parseErr == nil {
 		query := `SELECT * FROM scheduler 
 			WHERE date = :date 
 			LIMIT :limit`
@@ -90,33 +91,35 @@ func Tasks(limit int, search string) ([]*Task, error) {
 			tasks = append(tasks, task)
 		}
 		return tasks, nil
-	} else {
-		searchValue := "%" + search + "%"
-		query := `SELECT * FROM scheduler 
-			WHERE title 
-			LIKE :search OR comment LIKE :search 
-			ORDER BY date 
-			LIMIT :limit`
-		resp, err = db.Query(query,
-			sql.Named("search", searchValue),
-			sql.Named("limit", limit))
+	}
+
+	searchValue := "%" + search + "%"
+	query := `SELECT * FROM scheduler 
+		WHERE title 
+		LIKE :search OR comment LIKE :search 
+		ORDER BY date 
+		LIMIT :limit`
+	resp, err = db.Query(query,
+		sql.Named("search", searchValue),
+		sql.Named("limit", limit))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Close()
+
+	tasks := []*Task{}
+	for resp.Next() {
+		task := &Task{}
+		err := resp.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Close()
-
-		tasks := []*Task{}
-		for resp.Next() {
-			task := &Task{}
-
-			err := resp.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
-			if err != nil {
-				return nil, err
-			}
-			tasks = append(tasks, task)
-		}
-		return tasks, nil
+		tasks = append(tasks, task)
 	}
+	if err := resp.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
 }
 
 func GetTask(id string) (*Task, error) {

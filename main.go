@@ -21,6 +21,7 @@ func main() {
 		fmt.Println("Error initializing database:", err)
 		return
 	}
+	defer db.Close()
 
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
 	port := os.Getenv("TODO_PORT")
